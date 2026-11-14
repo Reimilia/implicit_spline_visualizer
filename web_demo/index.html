@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive replay of implicit deformation benchmarks: independent playback, synchronized energy, phase portraits, and numerical details.">
+  <title>Implicit Dynamics Explorer</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Implicit Dynamics Explorer home"><span class="brand-mark" aria-hidden="true">∿</span><span>Deformable Splines<span class="brand-sub">NUMERICAL EXPERIMENTS</span></span></a>
+    <nav aria-label="Main navigation"><a href="#explorer">Explorer</a><a href="#algorithms">Algorithms</a><a href="#about">About the data</a></nav>
+    <span class="static-tag"><span></span> Static · GitHub Pages ready</span>
+  </header>
+  <main id="top">
+    <section class="intro">
+      <div><p class="eyebrow">SHAPE, MOMENTUM & INFORMATION</p><h1>Implicit dynamics explorer<span>.</span></h1><p class="lede">Replay deformation trajectories. Inspect the energy, phase space, and geometry at the same saved state.</p></div>
+      <div class="intro-facts" aria-label="Dataset overview"><div><strong id="run-count">—</strong><span>saved runs</span></div><div><strong>6</strong><span>shape families</span></div><div><strong id="method-count">8</strong><span>algorithm variants</span></div></div>
+    </section>
+    <section id="explorer" aria-label="Trajectory explorer">
+      <div class="dataset-toolbar">
+        <label class="collection-label">Experiment<select id="collection" aria-label="Experiment collection"></select></label>
+        <label>Observation<select id="domain" aria-label="Observation type"></select></label>
+        <label>Quality<select id="quality" aria-label="Observation quality"></select></label>
+        <label>Shape<select id="shape" aria-label="Target shape"></select></label>
+        <label>Access<select id="visibility" aria-label="Observation access"></select></label>
+        <label class="seed-label">Seed<select id="seed" aria-label="Evaluation seed"></select></label>
+      </div>
+      <div class="experiment-context"><p id="context-description">Loading saved experiments…</p><label class="check"><input id="reference" type="checkbox" checked> Scoring contour</label></div>
+      <div class="comparison-toolbar">
+        <div class="comparison-heading"><span class="section-index">01</span><h2>Compare trajectories</h2></div>
+        <div class="master-controls"><button id="play-all" class="button primary" type="button"><span aria-hidden="true">▶︎</span> Play all</button><button id="reset-all" class="button" type="button">Reset</button><label class="check"><input id="linked" type="checkbox"> Link timelines</label><button id="add-panel" class="button add-button" type="button">+ Add panel</button></div>
+      </div>
+      <div class="replay-hint"><span class="hint-dot"></span><p>1× replays a run in 2 seconds. Speed changes playback only. Energy is model-specific; new observations can change it.</p></div>
+      <div id="panels" class="panels" aria-live="polite"></div>
+      <div id="global-error" class="error-box" hidden></div>
+    </section>
+    <section id="algorithms" class="algorithms-section">
+      <div class="section-heading"><span class="section-index">02</span><div><h2>What each algorithm computes</h2><p>The occupancy is u, the AT edge field is a, and the configuration is q = (u, a), with conjugate momentum p. Received data and confidence are g and w. V is potential energy, H is Hamiltonian energy, M is mass, and G is the dissipative feedback metric. Dₕ denotes grid differences and ⟨·⟩ the grid average. Pure NN potentials use u; their stored a block remains inert.</p></div></div>
+      <div id="algorithm-list" class="algorithm-list"></div>
+    </section>
+    <section id="about" class="about-section">
+      <div class="section-heading"><span class="section-index">03</span><div><h2>Read the traces precisely</h2><p>Saved numerical results, with the conventions used in the benchmark.</p></div></div>
+      <div class="about-grid">
+        <article><h3>One state, every view</h3><p>The contour, chart cursors, phase marker, and readouts use the same recorded state. Replay holds saved states between samples. Vertical energy changes at an observation boundary are preserved.</p></article>
+        <article><h3>A projection of phase space</h3><p>The phase portrait uses a fixed direction from the shared initial field to the final observed field, normalized in the grid L² pairing. It is a display projection of the field and its momentum, rather than the complete phase space.</p></article>
+        <article><h3>Two kinds of solver clock</h3><p>Flows use numerical relaxation units. Split Bregman uses iterations. The horizontal alignment shows observation-stage progress; it does not equate iterations with physical seconds or identify a true deformation history.</p></article>
+        <article><h3>What the references mean</h3><p>IoU and the dashed scoring contour use the clean synthetic target for evaluation only. Topology counts include every component and hole, with 8-connected foreground and 4-connected background. Clean labels do not enter the solvers.</p></article>
+      </div>
+      <div class="provenance"><span class="provenance-icon" aria-hidden="true">↗</span><p>All trajectories were computed offline. The page performs no training or time integration. Downloads contain the displayed scalar traces; the benchmark archive contains full field states and source code.</p><button id="download-catalog" class="text-button" type="button">Download experiment index</button></div>
+    </section>
+  </main>
+  <footer><span>Deformable Splines · Implicit field benchmarks</span><span>HTML + JavaScript · No backend required</span></footer>
+  <template id="panel-template">
+    <article class="panel">
+      <header class="panel-header"><div class="panel-title"><span class="panel-letter"></span><span class="method-dot"></span><span class="kind-tag"></span></div><button class="icon-button remove-panel" type="button" aria-label="Remove comparison panel">×</button><label class="run-label"><span class="sr-only">Algorithm and metric</span><select class="run-select"></select></label></header>
+      <div class="panel-loading" hidden>Loading saved trajectory…</div>
+      <div class="panel-error error-box" hidden></div>
+      <div class="panel-content">
+        <div class="visual-stack">
+          <div class="scene-wrap"><canvas class="scene" role="img" aria-label="Saved implicit deformation contour"></canvas><span class="coverage-tag"></span><span class="state-tag"></span></div>
+          <div class="transport"><button class="play-button icon-button" type="button" aria-label="Play this trajectory">▶︎</button><button class="restart-button icon-button" type="button" aria-label="Restart this trajectory">↺</button><label class="speed-label"><span class="sr-only">Playback speed</span><select class="speed-select" aria-label="Playback speed"><option value="0.25">0.25×</option><option value="0.5" selected>0.5×</option><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label><span class="clock-readout"></span></div>
+          <label class="scrub-label"><span class="sr-only">Saved trajectory progress</span><input class="scrubber" type="range" min="0" max="1000" step="1" value="0" aria-label="Saved trajectory progress"></label>
+          <div class="scene-legend"><span><i class="trajectory-key"></i> Reconstruction</span><span><i class="reference-key"></i> Scoring contour</span></div>
+        </div>
+        <div class="trace-stack">
+          <div class="chart-block energy-block"><div class="chart-heading"><h3>Energy</h3><span class="chart-value energy-value"></span></div><div class="chart-legend"><span><i style="background:#263f58"></i>Hamiltonian H</span><span><i style="background:#30958c"></i>Potential V</span><span><i style="background:#c49142"></i>Kinetic K</span></div><svg class="energy-chart" viewBox="0 0 420 190" role="img" aria-label="Hamiltonian, potential, and kinetic energy"></svg></div>
+          <div class="chart-block qoi-block"><div class="chart-heading"><select class="qoi-select" aria-label="Quantity of interest"></select><span class="chart-value qoi-value"></span></div><svg class="qoi-chart" viewBox="0 0 420 190" role="img" aria-label="Selected quantity of interest"></svg></div>
+        </div>
+        <div class="phase-block"><div class="chart-heading"><h3>Phase projection</h3><label><span class="sr-only">Phase projection basis</span><select class="phase-select" aria-label="Phase projection basis"><option value="mode">Shared deformation direction</option><option value="mean">Global field means</option></select></label></div><svg class="phase-chart" viewBox="0 0 420 190" role="img" aria-label="Projected field configuration and momentum"></svg></div>
+        <div class="state-stats"><div><span>IoU</span><strong class="stat-iou">—</strong></div><div><span>Components / holes</span><strong class="stat-topology">—</strong></div><div><span>Momentum norm</span><strong class="stat-momentum">—</strong></div><div><span>Saved state</span><strong class="stat-frame">—</strong></div></div>
+      </div>
+      <details class="method-details"><summary>Numerical details for this run</summary><p class="method-description"></p><code class="method-equation"></code><p class="metric-description"></p><p class="run-provenance"></p></details>
+      <div class="panel-downloads"><button class="download-csv text-button" type="button">↓ Scalar traces CSV</button><button class="download-svg text-button" type="button">↓ Current plots SVG</button><span class="complete-tag"></span></div>
+    </article>
+  </template>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
