@@ -1,0 +1,58 @@
+{
+  "dirichlet": {
+    "display": true,
+    "tex": "\\begin{aligned}V &= \\left\\langle 1.5\\,w(u-g)^2+0.004\\,|D_hu|^2\\right\\rangle_h \\\\ u_{n+1} &= u_n-\\Delta t\\,\\nabla_u V(u_{n+1}).\\end{aligned}"
+  },
+  "ms_split_bregman": {
+    "display": true,
+    "tex": "\\begin{aligned}\\min_{0\\le u\\le1}\\; &\\left\\langle 3w\\big[(1-u)g^2+u(1-g)^2\\big]\\right. \\\\ &\\left.{}+0.025\\,|D_hu|\\right\\rangle_h.\\end{aligned}"
+  },
+  "fixed_at": {
+    "display": true,
+    "tex": "q=(u,a),\\qquad \\dot{q}=-0.18\\,\\nabla_q V_{\\mathrm{AT}}."
+  },
+  "untrained_ph": {
+    "display": true,
+    "tex": "\\begin{aligned}H &= V_{\\mathrm{AT}}+\\tfrac12\\langle p^{\\mathsf T}p\\rangle_h \\\\ \\dot q &= p-0.18\\,G^{-1}\\nabla_q V_{\\mathrm{AT}} \\\\ \\dot p &= -\\nabla_q V_{\\mathrm{AT}}-2p.\\end{aligned}"
+  },
+  "neural_ph": {
+    "display": true,
+    "tex": "\\begin{aligned}V &= V_{\\mathrm{AT}}+0.20\\,V_{\\mathrm N} \\\\ H &= V+\\tfrac12\\langle p^{\\mathsf T} M^{-1}p\\rangle_h \\\\ \\dot q &= M^{-1}p-\\alpha G^{-1}\\nabla_q V \\\\ \\dot p &= -\\nabla_q V-DM^{-1}p.\\end{aligned}"
+  },
+  "neural_potential": {
+    "display": true,
+    "tex": "\\begin{aligned}z &= h_\\theta(u,g,w,D_hu,D_hg) \\\\ V_{\\mathrm N} &= \\tfrac12\\langle w z^2\\rangle_h \\\\ \\dot u &= -\\nabla_u V_{\\mathrm N},\\qquad p=0.\\end{aligned}"
+  },
+  "frozen_nn_ph": {
+    "display": true,
+    "tex": "\\begin{aligned}H &= V_{\\mathrm N}+\\tfrac12\\langle p^{\\mathsf T}p\\rangle_h \\\\ \\dot q &= p-\\nabla_q V_{\\mathrm N} \\\\ \\dot p &= -\\nabla_q V_{\\mathrm N}-2p.\\end{aligned}"
+  },
+  "neural_potential_ph": {
+    "display": true,
+    "tex": "\\begin{aligned}H &= V_{\\mathrm N}+\\tfrac12\\langle p^{\\mathsf T}p\\rangle_h \\\\ \\dot q &= p-G^{-1}\\nabla_q V_{\\mathrm N} \\\\ \\dot p &= -\\nabla_q V_{\\mathrm N}-2p.\\end{aligned}"
+  },
+  "metric_none": {"display": true, "tex": "G=I."},
+  "metric_isotropic": {"display": true, "tex": "\\bar F=I,\\qquad G=I."},
+  "metric_fim": {
+    "display": true,
+    "tex": "\\begin{aligned} F &= J^{\\mathsf T} R^{-1}J \\\\ G_u &= \\frac{I+\\lambda\\bar F}{1+\\lambda},\\qquad G_a=I.\\end{aligned}"
+  },
+  "u": {"tex": "u"},
+  "a": {"tex": "a"},
+  "q": {"tex": "q=(u,a)"},
+  "p": {"tex": "p"},
+  "g": {"tex": "g"},
+  "w": {"tex": "w"},
+  "V": {"tex": "V"},
+  "V_AT": {"tex": "V_{\\mathrm{AT}}"},
+  "V_N": {"tex": "V_{\\mathrm N}"},
+  "H": {"tex": "H"},
+  "M": {"tex": "M"},
+  "D": {"tex": "D"},
+  "G": {"tex": "G"},
+  "alpha": {"tex": "\\alpha"},
+  "Dh": {"tex": "D_h"},
+  "grid_average": {"tex": "\\langle\\cdot\\rangle_h"},
+  "phi": {"tex": "\\phi=u-\\tfrac12"},
+  "phi_error": {"tex": "\\phi-\\phi^*=u-u^*"}
+}

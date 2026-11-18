@@ -46,6 +46,42 @@ publish directory before enabling this workflow.
   SVG. The dashed clean scoring contour can be hidden; all IoU values continue
   to use the same evaluation target.
 
+## Static results and sequential motion
+
+The Static results page links to six cases from the offline FIM gallery, one
+per shape family. Each case provides field snapshots, signed field differences,
+Hamiltonian slices with projected trajectories, and FIM diagnostics. Click a
+figure to open its full PNG or choose its SVG. The Explorer link selects the
+same case from the catalog.
+
+The Sequential motion page uses the original 12 GIFs from
+`sequential_motion_gallery.html`. Each clip starts with a still frame. The
+filter switches between the original local-field and boundary-cloud cases.
+The site serves the GIFs, plots, and fonts as local assets.
+
+Algorithm equations are pre-rendered with KaTeX and include MathML for
+assistive technology. Edit `scripts/algorithm_math.json` to change the
+formulas. Regenerate the markup and fonts with the pinned npm package.
+
+```bash
+npm pack katex@0.19.1
+tar -xzf katex-0.19.1.tgz
+node scripts/build_algorithm_math.mjs ./package
+```
+
+The published site uses the included output directly. To refresh the gallery
+assets, run the following command with Pillow installed and both source
+artifacts available.
+
+```bash
+python3 scripts/build_results_galleries.py \
+  --static-archive /path/to/Implicit_Offline_Static_Gallery.zip \
+  --motion-html /path/to/sequential_motion_gallery.html
+```
+
+The standalone Explorer embeds the equations and fonts. Use the full Pages
+package to browse the linked gallery pages.
+
 ## Included experiments
 
 - **FIM ablation:** 528 runs on noisy images and noisy boundary clouds, with

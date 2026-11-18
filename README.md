@@ -2,7 +2,10 @@
 
 This package contains the prebuilt interactive demo: 960 saved runs, independent
 0.25×–4× playback, linked comparisons, energy/QoI/phase plots, numerical algorithm
-paragraphs, and CSV/SVG downloads. No build or Python runtime is required on the host.
+paragraphs, and CSV/SVG downloads. Static results contains six selected FIM
+cases, each with PNG and SVG plots. Sequential motion contains the 12 original
+clips and observation filters. The prebuilt pages include local KaTeX fonts
+and run directly on GitHub Pages.
 
 1. Copy this package into the root of your intended GitHub repository, retaining
    `web_demo/` and `.github/workflows/implicit-demo-pages.yml`.
@@ -18,6 +21,7 @@ To review locally, run `python3 -m http.server 8000` from this folder and open
 `python3 scripts/bundle_interactive_demo.py --output demo.html` and open it.
 
 Run data/playback checks with `node --test web_demo/tests/core.test.js`.
+See the gallery and equation build instructions in INTERACTIVE_DEMO.md.
 See INTERACTIVE_DEMO.md for solver definitions, phase projections, clocks,
 source provenance, and regeneration using the complete benchmark archive.
 This package contains precomputed results; it performs no training or integration.

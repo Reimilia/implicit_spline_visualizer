@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 IMPORT = "import { frameAt, extent, ticks, nearestFrame, buildPath, csvForRun, phaseProject } from './core.js';"
+MATH_IMPORT = "import { MATH } from './equations.js';"
 
 
 def bundle(source: Path, destination: Path) -> None:
@@ -19,6 +22,22 @@ def bundle(source: Path, destination: Path) -> None:
     if app.count(IMPORT) != 1:
         raise ValueError('Update the standalone bundler for the current core import')
     app = app.replace(IMPORT, '')
+    math = ''
+    if MATH_IMPORT in app:
+        app = app.replace(MATH_IMPORT, '')
+        math = (source / 'equations.js').read_text().replace('export const MATH', 'const MATH', 1)
+        katex = source / 'assets/katex'
+        math_css = (katex / 'katex.min.css').read_text()
+
+        def inline_font(match):
+            font = (katex / match.group(1)).read_bytes()
+            return 'url(data:font/woff2;base64,' + base64.b64encode(font).decode('ascii') + ')'
+
+        math_css = re.sub(r'url\((fonts/[^)]+\.woff2)\)', inline_font, math_css)
+        index = index.replace('<link rel="stylesheet" href="./assets/katex/katex.min.css">',
+                              '<style>' + math_css + '</style>')
+    # A single-file explorer can be saved independently of the gallery pages.
+    index = re.sub(r'^\s*<a class="gallery-nav"[^\n]+</a>\n', '\n', index, flags=re.MULTILINE)
     core = core.replace('export function ', 'function ').replace('export const ', 'const ')
     catalog = json.loads((source / 'catalog.json').read_text())
     referenced = set()
@@ -35,7 +54,7 @@ def bundle(source: Path, destination: Path) -> None:
     payload = json.dumps(records, separators=(',', ':'), ensure_ascii=False).replace('<', r'\u003c')
     index = index.replace('<link rel="stylesheet" href="./styles.css">', '<style>' + style + '</style>')
     index = index.replace('<script type="module" src="./app.js"></script>',
-        '<script>window.IMPLICIT_DEMO_DATA=' + payload + ';</script><script>' + core + '\n' + app + '</script>')
+        '<script>window.IMPLICIT_DEMO_DATA=' + payload + ';</script><script>' + core + '\n' + math + '\n' + app + '</script>')
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(index)
 

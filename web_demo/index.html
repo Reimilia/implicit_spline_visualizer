@@ -5,13 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Interactive replay of implicit deformation benchmarks: independent playback, synchronized energy, phase portraits, and numerical details.">
   <title>Implicit Dynamics Explorer</title>
+  <link rel="stylesheet" href="./assets/katex/katex.min.css">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="#top" aria-label="Implicit Dynamics Explorer home"><span class="brand-mark" aria-hidden="true">∿</span><span>Deformable Splines<span class="brand-sub">NUMERICAL EXPERIMENTS</span></span></a>
-    <nav aria-label="Main navigation"><a href="#explorer">Explorer</a><a href="#algorithms">Algorithms</a><a href="#about">About the data</a></nav>
-    <span class="static-tag"><span></span> Static · GitHub Pages ready</span>
+    <nav aria-label="Main navigation">
+      <a href="#explorer">Explorer</a>
+      <a href="#algorithms">Algorithms</a>
+      <a class="gallery-nav" href="./results/index.html">Static results</a>
+      <a class="gallery-nav" href="./sequential_motion_gallery.html">Sequential motion</a>
+    </nav>
   </header>
   <main id="top">
     <section class="intro">
@@ -37,7 +42,12 @@
       <div id="global-error" class="error-box" hidden></div>
     </section>
     <section id="algorithms" class="algorithms-section">
-      <div class="section-heading"><span class="section-index">02</span><div><h2>What each algorithm computes</h2><p>The occupancy is u, the AT edge field is a, and the configuration is q = (u, a), with conjugate momentum p. Received data and confidence are g and w. V is potential energy, H is Hamiltonian energy, M is mass, and G is the dissipative feedback metric. Dₕ denotes grid differences and ⟨·⟩ the grid average. Pure NN potentials use u; their stored a block remains inert.</p></div></div>
+      <div class="section-heading">
+        <div>
+          <h2>What each algorithm computes</h2>
+          <p class="math-glossary">The occupancy is <span data-math="u">u</span>, the Ambrosio–Tortorelli edge field is <span data-math="a">a</span>, and <span data-math="q">q = (u, a)</span> is the configuration with conjugate momentum <span data-math="p">p</span>. The received data and confidence are <span data-math="g">g</span> and <span data-math="w">w</span>. The potential <span data-math="V">V</span> uses the AT term <span data-math="V_AT">V_AT</span>, the neural term <span data-math="V_N">V_N</span>, or both, depending on the method. In the pH equations, <span data-math="H">H</span> is the Hamiltonian, <span data-math="M">M</span> is mass, <span data-math="D">D</span> is momentum damping, <span data-math="alpha">α</span> is configuration dissipation, and <span data-math="G">G</span> is the feedback metric. The operator <span data-math="Dh">Dₕ</span> denotes grid differences, and <span data-math="grid_average">⟨·⟩</span> denotes the grid average.</p>
+        </div>
+      </div>
       <div id="algorithm-list" class="algorithm-list"></div>
     </section>
     <section id="about" class="about-section">
@@ -71,7 +81,14 @@
         <div class="phase-block"><div class="chart-heading"><h3>Phase projection</h3><label><span class="sr-only">Phase projection basis</span><select class="phase-select" aria-label="Phase projection basis"><option value="mode">Shared deformation direction</option><option value="mean">Global field means</option></select></label></div><svg class="phase-chart" viewBox="0 0 420 190" role="img" aria-label="Projected field configuration and momentum"></svg></div>
         <div class="state-stats"><div><span>IoU</span><strong class="stat-iou">—</strong></div><div><span>Components / holes</span><strong class="stat-topology">—</strong></div><div><span>Momentum norm</span><strong class="stat-momentum">—</strong></div><div><span>Saved state</span><strong class="stat-frame">—</strong></div></div>
       </div>
-      <details class="method-details"><summary>Numerical details for this run</summary><p class="method-description"></p><code class="method-equation"></code><p class="metric-description"></p><p class="run-provenance"></p></details>
+      <details class="method-details">
+        <summary>Numerical details for this run</summary>
+        <p class="method-description"></p>
+        <div class="method-equation equation-block"></div>
+        <p class="metric-description"></p>
+        <div class="metric-equation equation-block" hidden></div>
+        <p class="run-provenance"></p>
+      </details>
       <div class="panel-downloads"><button class="download-csv text-button" type="button">↓ Scalar traces CSV</button><button class="download-svg text-button" type="button">↓ Current plots SVG</button><span class="complete-tag"></span></div>
     </article>
   </template>

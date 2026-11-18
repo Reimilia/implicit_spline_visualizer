@@ -1,4 +1,5 @@
 import { frameAt, extent, ticks, nearestFrame, buildPath, csvForRun, phaseProject } from './core.js';
+import { MATH } from './equations.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const NS = 'http://www.w3.org/2000/svg';
@@ -146,10 +147,19 @@ function download(text, name, mime = 'text/plain') {
 }
 
 function metricDescription(run) {
-  if (collection.id !== 'fim') return 'This baseline collection uses its original prescribed metric. The FIM controls are in the separate FIM experiment.';
-  if (run.metric === 'none') return 'FIM off: G = I. The potential and momentum dynamics are unchanged by a Fisher feedback operator. SF is absent throughout this implicit-field experiment.';
-  if (run.metric === 'isotropic') return 'Isotropic control: the trace-normalized information is replaced by the identity. This is an identity-geometry control with exactly the same model weights and observations as FIM off.';
-  return 'FIM on: the received-observation likelihood defines F = JᵀR⁻¹J, frozen within each query stage. The configuration feedback uses Gᵤ = (I + λF̄)/(1 + λ), λ = 1, and Gₐ = I; the canonical pH block stays fixed. Full-image FIM reduces to the isotropic control after normalization. No SF or global-pose block is used.';
+  if (collection.id !== 'fim') return 'This baseline collection uses the identity metric. The FIM controls are in the FIM experiment.';
+  if (run.metric === 'none') return 'FIM off uses identity geometry for configuration feedback.';
+  if (run.metric === 'isotropic') return 'The isotropic control substitutes the identity for the trace-normalized information. It uses the same weights and observations as FIM off.';
+  return 'The measurement Jacobian J and working noise covariance R define the Fisher information F. Its trace-normalized form enters the occupancy feedback metric with weight λ = 1. The AT edge field uses identity feedback. Each query stage holds these operators fixed.';
+}
+
+function setEquation(element, key, fallback = '') {
+  if (Object.hasOwn(MATH, key)) {
+    // Only the versioned module contains trusted, pre-rendered markup.
+    element.innerHTML = MATH[key];
+  } else {
+    element.textContent = fallback;
+  }
 }
 
 class Panel {
@@ -247,8 +257,11 @@ class Panel {
   details() {
     const method = catalog.methods[this.runMeta.method];
     $('.method-description', this.root).textContent = method.description;
-    $('.method-equation', this.root).textContent = method.equation;
+    setEquation($('.method-equation', this.root), this.runMeta.method, method.equation);
     $('.metric-description', this.root).textContent = metricDescription(this.runMeta);
+    const metricEquation = $('.metric-equation', this.root);
+    metricEquation.hidden = method.kind !== 'ph';
+    setEquation(metricEquation, collection.id === 'fim' ? 'metric_' + this.runMeta.metric : 'metric_none');
     const settings = collection.settings;
     $('.run-provenance', this.root).textContent = `Grid ${this.input.n} × ${this.input.n}; domain [−${this.input.extent}, ${this.input.extent}]². ` +
       (this.run.clock === 'iteration' ? `${this.run.iterationBudget} Bregman iterations per stage. ` : `Base relaxation step ${settings.eval_dt}; ${this.runMeta.method === 'dirichlet' ? 'backward Euler linear solve' : 'adaptive energy backtracking'}. `) +
@@ -407,8 +420,10 @@ function algorithms() {
     const h3 = document.createElement('h3'), dot = document.createElement('i'); dot.style.background = method.color;
     h3.append(dot, document.createTextNode(method.name));
     const p = document.createElement('p'); p.textContent = method.description;
-    const code = document.createElement('code'); code.textContent = method.equation;
-    card.append(h3, p, code); list.append(card);
+    const equation = document.createElement('div');
+    equation.className = 'equation-block';
+    setEquation(equation, key, method.equation);
+    card.append(h3, p, equation); list.append(card);
   });
 }
 
@@ -452,6 +467,9 @@ async function changeFamily(preferences = {}) {
 }
 
 async function init() {
+  document.querySelectorAll('[data-math]').forEach(element => {
+    setEquation(element, element.dataset.math, element.textContent);
+  });
   catalog = await resource('catalog.json');
   $('#run-count').textContent = catalog.sourceRuns.toLocaleString();
   $('#method-count').textContent = Object.keys(catalog.methods).length;
