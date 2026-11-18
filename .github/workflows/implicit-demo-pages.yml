@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'index.html'
       - 'web_demo/**'
       - '.github/workflows/implicit-demo-pages.yml'
   workflow_dispatch:
@@ -27,10 +28,16 @@ jobs:
       - uses: actions/checkout@v6
       - name: Configure Pages
         uses: actions/configure-pages@v5
-      - name: Upload static demo
+      - name: Stage Pages site
+        run: |
+          test -f web_demo/index.html
+          mkdir -p _site/web_demo
+          cp index.html _site/index.html
+          cp -a web_demo/. _site/web_demo/
+      - name: Upload staged site
         uses: actions/upload-pages-artifact@v4
         with:
-          path: web_demo
+          path: _site
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
